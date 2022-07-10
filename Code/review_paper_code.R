@@ -8,7 +8,7 @@ set.seed(24601)
 par(mfrow = c(2,2))
 n = 1000 # Sample size
 eval_grid = seq(0, 1, by = 0.002)
-coverage_mat = matrix(0, nrow = 100, ncol = 1)
+# coverage_mat = matrix(0, nrow = 100, ncol = 1)
 mu = c(0.5, 5/7)
 sd = c(1, sqrt(0.1))/7
 f0 = function(x) 0.5*(dnorm(x, mu[1], sd[1]) + dnorm(x, mu[2], sd[2]))
@@ -23,13 +23,6 @@ library(nprobust)
 # We'll also keep the bandwidth constant throughout (i.e. not adjusting it to improve ESS near boundaries)
 # Makes it more straightforward to compare to the stuff in the paper imo
 ccf_est = kdrobust(X, eval = eval_grid, bwselect = 'imse-dpi', bwcheck = 0)
-# nprobust.plot(ccf_est)
-#coverage_mat[i] = as.numeric((f0(0.5) < ccf_est$Estimate[which(eval_grid == 0.5),"tau.bc"] + qnorm(0.975)*ccf_est$Estimate[which(eval_grid == 0.5),"se.rb"])&
-#                                (f0(0.5)>ccf_est$Estimate[which(eval_grid == 0.5),"tau.bc"] - qnorm(0.975)*ccf_est$Estimate[which(eval_grid == 0.5),"se.rb"]))
-
-
-#}
-#mean(coverage_mat)
 
 # Variable-width bootstrap confidence bands based on RBC(Cheng and Chen 2019)
 h = ccf_est$Estimate[1,'h']
@@ -61,7 +54,7 @@ legend('topleft', legend = c(expression(italic(f[0])), expression(italic(hat(f))
 #### Bernstein polynomial methods ####
 # Running the algorithm of Petrone (1999) for a variable-dimension basis expansion density estimate
 # Inference is Bayesian and simply comes from MCMC
-source('PhD/Density Regression/code/unknown_dim_basis_dens_functions.R')
+source('unknown_dim_basis_dens_functions.R')
 petrone_est = run_mcmc(list(X), K0 = 4, rate = 1, K_log_prior = numeric(150), 
                        basis_type = 'Bernstein', M = 10, S = 5000, x_min = 0, x_max = 1)
 # Note: the first 1000 samples will be discarded as burn-in
@@ -137,7 +130,7 @@ legend('topleft', legend = c(expression(italic(f[0])), expression(italic(hat(f))
 
 #Actual plotting code
 setEPS()
-postscript(file = 'PhD/Density Regression/documentation/mcdonald_density_uq_fig.eps', width = 8, height = 8*11/14, family = 'LM Roman 10')
+postscript(file = '../Documentation/mcdonald_density_uq_fig.eps', width = 8, height = 8*11/14, family = 'LM Roman 10')
 #loadfonts(device = 'win')
 
 par(mfrow = c(2,2), mar = c(2.6, 3.1, 2.1, 0.6), cex.axis = 1.25, cex.lab = 1.25,
